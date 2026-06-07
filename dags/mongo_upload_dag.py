@@ -18,17 +18,19 @@ def upload_mongo():
     with MongoClient(cfg) as client:
         db = client["source_db"]
         col = db["black_friday_sales"]
-
-        for file in os.listdir(folder):
-            if file.endswith(".csv"):
-                file_path = os.path.join(folder, file)
-
-                df = pd.read_csv(file_path)
-
-                if not df.empty:
-                    inserted = col.insert_many(df.to_dict("records"))
-                logger.info(f"Rows inserted: {len(inserted.inserted_ids)}")
-                print(f"Inserted: {file}")
+        file = os.listdir(folder)[0] # Take first file in list
+        if file.endswith(".csv"):
+            file_path = os.path.join(folder, file)
+            df = pd.read_csv(file_path)
+            ############# Inserting records #############
+            if not df.empty:
+                inserted = col.insert_many(df.to_dict("records"))
+            logger.info(f"Rows inserted: {len(inserted.inserted_ids)}")
+            print(f"Inserted: {file}")
+            ############# Removing Loaded file #############
+            path = os.path.join(folder, file)
+            os.remove(path)
+            print(f"File {file} has been removed")
 
 with DAG(
     dag_id = 'upload_to_mongo',

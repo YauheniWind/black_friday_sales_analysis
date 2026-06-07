@@ -21,4 +21,4 @@ def split_file(file_name, lines_per_file):
 
         out.close()
 
-split_file("retail_black_friday_sales_100k.csv", 10000)
+split_file("../original_source/retail_black_friday_sales_100k.csv", 2000)

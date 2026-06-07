@@ -9,10 +9,9 @@ from airflow.operators.empty import EmptyOperator
 from helpers.get_minio_client import get_minio_client
 
 logger = logging.getLogger(__name__)
-local_dir = "/opt/airflow/data/source_s3"
-bucket_name = "sales-data"
 
 def create_minio_buckets():
+    bucket_name = "sales-data"
     s3_client = get_minio_client()
     try:
         s3_client.head_bucket(Bucket=bucket_name)
@@ -21,20 +20,29 @@ def create_minio_buckets():
 
 def upload_file_to_s3():
     s3_client = get_minio_client()
-
-    for file_name in os.listdir(local_dir):
-        file_path = os.path.join(local_dir, file_name)
-        logger.info(f"""
-                        File {file_path} in bucket {bucket_name}
-                    """)
-        if os.path.isfile(file_path):
-            s3_client.upload_file(
-                Filename=file_path,
-                Bucket=bucket_name,
-                Key=file_name
-            )
-
-    print("All files uploaded")
+    bucket_name = "sales-data"
+    local_dir = "/opt/airflow/data/source_s3"
+    file_name = os.listdir(local_dir)[0] # Take first file in list
+    file_path = os.path.join(local_dir, file_name)
+    logger.info(f"""
+                File {file_path} in bucket {bucket_name}
+                """)
+    ############# Upload into bucket #############
+    if os.path.isfile(file_path):
+        s3_client.upload_file(
+            Filename=file_path,
+            Bucket=bucket_name,
+            Key=file_name
+        )
+    logger.info(f"""
+                Loaded file {file_name}
+                """)
+    ############# Removing Loaded file #############
+    path = os.path.join(local_dir, file_name)
+    os.remove(path)
+    logger.info(f"""
+                File {file_name} has been removed
+                """)
 
 with DAG(
     dag_id = 'upload_to_s3',
