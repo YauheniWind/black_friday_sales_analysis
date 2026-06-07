@@ -49,6 +49,7 @@ def load_data_postgres_mongo():
         coll = client["source_db"]["black_friday_sales"]
         # Get whole collection
         rows = list(coll.find())
+        mongo_ids = [row["_id"] for row in rows] # Save all IDs
         norm_rows = []
         # Normalize values
         for row in rows:
@@ -82,17 +83,37 @@ def load_data_postgres_mongo():
                                                     quantity, purchase_amount, payment_method, purchase_date, purchase_hour,
                                                     is_weekend, is_black_friday)
                 values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                on conflict (transaction_id)
+                do update set
+                    age_group = EXCLUDED.age_group,
+                    gender = EXCLUDED.gender,
+                    city = EXCLUDED.city,
+                    customer_segment = EXCLUDED.customer_segment,
+                    product_id = EXCLUDED.product_id,
+                    product_category = EXCLUDED.product_category,
+                    original_price = EXCLUDED.original_price,
+                    discount_pct = EXCLUDED.discount_pct,
+                    final_price = EXCLUDED.final_price,
+                    quantity = EXCLUDED.quantity,
+                    purchase_amount = EXCLUDED.purchase_amount,
+                    payment_method = EXCLUDED.payment_method,
+                    purchase_date = EXCLUDED.purchase_date,
+                    purchase_hour = EXCLUDED.purchase_hour,
+                    is_weekend = EXCLUDED.is_weekend,
+                    is_black_friday = EXCLUDED.is_black_friday;
                 """
         conn = hook.get_conn()
         with conn.cursor() as cursor:
             cursor.executemany(sql, norm_rows)
         conn.commit()
+        coll.delete_many({"_id": {"$in": mongo_ids}}) # Drop all loaded IDs
         conn.close()
 
 
 def load_data_postgres_minio():
     s3_client = get_minio_client()
     hook = PostgresHook(postgres_conn_id="warehouse_postgres_conn")
+    conn = hook.get_conn()
     response = s3_client.list_objects_v2(Bucket='sales-data')
 
     for obj in response.get('Contents', []):
@@ -119,15 +140,46 @@ def load_data_postgres_minio():
 
         # Convert dataframe to list of tuples
         rows = [tuple(row) for row in df.itertuples(index=False, name=None)]
-        # Insert into Postgres
-        hook.insert_rows(
-            table="raw.black_friday_sales",
-            rows=rows,
-            target_fields=list(df.columns),
-            commit_every=1000,
-        )
+
+        sql = f"""
+                INSERT INTO raw.black_friday_sales (transaction_id, customer_id, age_group, gender, city, customer_segment,
+                                                    product_id, product_category, original_price, discount_pct, final_price,
+                                                    quantity, purchase_amount, payment_method, purchase_date, purchase_hour,
+                                                    is_weekend, is_black_friday)
+                values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                on conflict (transaction_id)
+                do update set
+                    age_group = EXCLUDED.age_group,
+                    gender = EXCLUDED.gender,
+                    city = EXCLUDED.city,
+                    customer_segment = EXCLUDED.customer_segment,
+                    product_id = EXCLUDED.product_id,
+                    product_category = EXCLUDED.product_category,
+                    original_price = EXCLUDED.original_price,
+                    discount_pct = EXCLUDED.discount_pct,
+                    final_price = EXCLUDED.final_price,
+                    quantity = EXCLUDED.quantity,
+                    purchase_amount = EXCLUDED.purchase_amount,
+                    payment_method = EXCLUDED.payment_method,
+                    purchase_date = EXCLUDED.purchase_date,
+                    purchase_hour = EXCLUDED.purchase_hour,
+                    is_weekend = EXCLUDED.is_weekend,
+                    is_black_friday = EXCLUDED.is_black_friday;
+                """
+        with conn.cursor() as cursor:
+            cursor.executemany(sql, rows)
+        conn.commit()
+        conn.close()
 
         print(f"Inserted {len(rows)} rows from {key}")
+
+        # Delete file after successful load
+        s3_client.delete_object(
+            Bucket="sales-data",
+            Key=key
+        )
+
+        print(f"Deleted {key}")
     print("Load completed")
 
 print("Done")
