@@ -6,43 +6,9 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.empty import EmptyOperator
 
-from helpers.get_minio_client import get_minio_client
+from scripts.upload_data.upload_data import upload_file_to_s3
 
 logger = logging.getLogger(__name__)
-
-def create_minio_buckets():
-    bucket_name = "sales-data"
-    s3_client = get_minio_client()
-    try:
-        s3_client.head_bucket(Bucket=bucket_name)
-    except:
-        s3_client.create_bucket(Bucket=bucket_name)
-
-def upload_file_to_s3():
-    s3_client = get_minio_client()
-    bucket_name = "sales-data"
-    local_dir = "/opt/airflow/data/source_s3"
-    file_name = os.listdir(local_dir)[0] # Take first file in list
-    file_path = os.path.join(local_dir, file_name)
-    logger.info(f"""
-                File {file_path} in bucket {bucket_name}
-                """)
-    ############# Upload into bucket #############
-    if os.path.isfile(file_path):
-        s3_client.upload_file(
-            Filename=file_path,
-            Bucket=bucket_name,
-            Key=file_name
-        )
-    logger.info(f"""
-                Loaded file {file_name}
-                """)
-    ############# Removing Loaded file #############
-    path = os.path.join(local_dir, file_name)
-    os.remove(path)
-    logger.info(f"""
-                File {file_name} has been removed
-                """)
 
 with DAG(
     dag_id = 'upload_to_s3',
@@ -54,11 +20,6 @@ with DAG(
 ) as dag:
     START = EmptyOperator(task_id = "START")
 
-    CREATE_MINIO_BUCKET = PythonOperator(
-        task_id = "CREATE_MINIO_BUCKET",
-        python_callable = create_minio_buckets
-    )
-
     UPLOAD_DATA_MINIO = PythonOperator(
         task_id = "UPLOAD_DATA_MINIO",
         python_callable = upload_file_to_s3
@@ -66,4 +27,4 @@ with DAG(
 
     END = EmptyOperator(task_id = "END")
 
-    START >> CREATE_MINIO_BUCKET >> UPLOAD_DATA_MINIO >> END
+    START >> UPLOAD_DATA_MINIO >> END

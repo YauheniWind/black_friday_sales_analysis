@@ -1,36 +1,10 @@
-import os
-import logging
-import pandas as pd
-from datetime import datetime, timezone
-from pymongo import MongoClient
-
+from datetime import datetime
 
 from airflow.models import DAG
-from airflow.models import Variable
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 
-logger = logging.getLogger(__name__)
-
-def upload_mongo():
-    cfg = Variable.get("lesson_38_mongo_uri")
-    folder = "/opt/airflow/data/source_mongo"
-    with MongoClient(cfg) as client:
-        db = client["source_db"]
-        col = db["black_friday_sales"]
-        file = os.listdir(folder)[0] # Take first file in list
-        if file.endswith(".csv"):
-            file_path = os.path.join(folder, file)
-            df = pd.read_csv(file_path)
-            ############# Inserting records #############
-            if not df.empty:
-                inserted = col.insert_many(df.to_dict("records"))
-            logger.info(f"Rows inserted: {len(inserted.inserted_ids)}")
-            print(f"Inserted: {file}")
-            ############# Removing Loaded file #############
-            path = os.path.join(folder, file)
-            os.remove(path)
-            print(f"File {file} has been removed")
+from scripts.upload_data.upload_data import upload_mongo
 
 with DAG(
     dag_id = 'upload_to_mongo',
