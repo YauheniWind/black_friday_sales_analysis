@@ -6,7 +6,7 @@ from airflow.models import Variable
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
 
-from helpers.get_minio_client import get_minio_client
+from scripts.helpers.get_minio_client import get_minio_client
 
 logger = logging.getLogger(__name__)
 
@@ -150,3 +150,107 @@ def rl_load_data_from_minio():
     print("Load completed")
 
 print("Done")
+
+def rl_reject_inconsistency():
+    hook = PostgresHook(postgres_conn_id="warehouse_postgres_conn")
+    conn = hook.get_conn()
+
+    sql = """
+            INSERT INTO raw.black_friday_sales_rejected
+            (
+                transaction_id,
+                customer_id,
+                age_group,
+                gender,
+                city,
+                customer_segment,
+                product_id,
+                product_category,
+                original_price,
+                discount_pct,
+                final_price,
+                quantity,
+                purchase_amount,
+                payment_method,
+                purchase_date,
+                purchase_hour,
+                is_weekend,
+                is_black_friday,
+                rejection_reason
+            )
+            SELECT
+                transaction_id,
+                customer_id,
+                age_group,
+                gender,
+                city,
+                customer_segment,
+                product_id,
+                product_category,
+                original_price,
+                discount_pct,
+                final_price,
+                quantity,
+                purchase_amount,
+                payment_method,
+                purchase_date,
+                purchase_hour,
+                is_weekend,
+                is_black_friday,
+
+                CASE
+                    WHEN purchase_hour NOT BETWEEN 0 AND 23
+                        THEN 'Invalid purchase hour'
+
+                    WHEN discount_pct NOT BETWEEN 0 AND 100
+                        THEN 'Invalid discount percentage'
+
+                    WHEN quantity <= 0
+                        THEN 'Invalid quantity'
+
+                    WHEN original_price <= 0
+                        THEN 'Invalid original price'
+
+                    WHEN final_price <= 0
+                        THEN 'Invalid final price'
+
+                    WHEN ABS(purchase_amount - final_price * quantity) > 0.01
+                        THEN 'Purchase amount mismatch'
+
+                    WHEN is_weekend NOT IN (0,1)
+                        THEN 'Invalid weekend flag'
+
+                    WHEN is_black_friday NOT IN (0,1)
+                        THEN 'Invalid black friday flag'
+
+                    ELSE 'Unknown validation error'
+                END AS rejection_reason
+
+            FROM raw.black_friday_sales
+            WHERE
+                purchase_hour NOT BETWEEN 0 AND 23
+                OR discount_pct NOT BETWEEN 0 AND 100
+                OR quantity <= 0
+                OR original_price <= 0
+                OR final_price <= 0
+                OR ABS(purchase_amount - final_price * quantity) > 0.01
+                OR is_weekend NOT IN (0,1)
+                OR is_black_friday NOT IN (0,1);
+                """
+    with conn.cursor() as cursor:
+        cursor.execute(sql)
+    conn.commit()
+    conn.close()
+
+def rl_delete_inconsistency():
+    hook = PostgresHook(postgres_conn_id="warehouse_postgres_conn")
+    conn = hook.get_conn()
+    sql = """
+            DELETE FROM raw.black_friday_sales b
+            USING raw.black_friday_sales_rejected r
+            WHERE b.transaction_id = r.transaction_id;
+        """
+    with conn.cursor() as cursor:
+        cursor.execute(sql)
+    conn.commit()
+    conn.close()

@@ -6,7 +6,7 @@ from pymongo import MongoClient
 
 from airflow.models import Variable
 
-from helpers.get_minio_client import get_minio_client
+from scripts.helpers.get_minio_client import get_minio_client
 
 logger = logging.getLogger(__name__)
 

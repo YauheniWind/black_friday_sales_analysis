@@ -1,6 +1,6 @@
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
-from helpers.get_ch_client import get_ch_client
+from scripts.helpers.get_ch_client import get_ch_client
 
 def cl_sales_performance_dtm():
     hook = PostgresHook(postgres_conn_id="warehouse_postgres_conn")

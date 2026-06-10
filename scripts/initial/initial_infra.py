@@ -1,7 +1,7 @@
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
-from helpers.get_minio_client import get_minio_client
-from helpers.get_ch_client import get_ch_client
+from scripts.helpers.get_minio_client import get_minio_client
+from scripts.helpers.get_ch_client import get_ch_client
 
 def initail_bucket():
     bucket_name = "sales-data"
@@ -36,6 +36,13 @@ def initail_raw():
             is_weekend NUMERIC,
             is_black_friday NUMERIC
             
+        );
+    """)
+    hook.run("""
+        CREATE TABLE IF NOT EXISTS raw.black_friday_sales_rejected(
+            LIKE raw.black_friday_sales INCLUDING ALL,
+            rejection_reason TEXT,
+            rejected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     """)
 
