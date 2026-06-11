@@ -308,7 +308,6 @@ ToDo add screenshots here:
 ![Grafana Dashboard](images/grafana_dashboard.png)
 ```
 
-```markdown
 <p align="center">
   <img src="images/initial_dag.png" alt="initial_dag" width="1200">
 </p>
@@ -328,7 +327,6 @@ ToDo add screenshots here:
 <p align="center">
   <img src="images/datamarts.png" alt="datamarts" width="1200">
 </p>
-```
 
 ---
 
