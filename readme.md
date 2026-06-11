@@ -50,9 +50,9 @@ The project simulates a real-world enterprise data platform where data arrives f
 
 ToDo add architecture image here:
 
-```markdown
-![Architecture](images/arfitecture_bfsa.png)
-```
+<p align="center">
+  <img src="images/arfitecture_bfsa.png" alt="Architecture" width="1200">
+</p>
 
 ---
 
