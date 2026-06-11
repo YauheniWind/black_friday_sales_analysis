@@ -51,7 +51,7 @@ The project simulates a real-world enterprise data platform where data arrives f
 ToDo add architecture image here:
 
 ```markdown
-![Architecture](images/architecture.png)
+![Architecture](../images/architecture.png)
 ```
 
 ---
