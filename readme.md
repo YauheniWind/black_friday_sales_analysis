@@ -309,7 +309,25 @@ ToDo add screenshots here:
 ```
 
 ```markdown
-![Airflow DAG](images/airflow_dag.png)
+<p align="center">
+  <img src="images/initial_dag.png" alt="initial_dag" width="1200">
+</p>
+
+<p align="center">
+  <img src="images/upload_into_raw.png" alt="upload_into_raw" width="1200">
+</p>
+
+<p align="center">
+  <img src="images/raw_layer.png" alt="raw_layer" width="1200">
+</p>
+
+<p align="center">
+  <img src="images/dds_layer.png" alt="dds_layer" width="1200">
+</p>
+
+<p align="center">
+  <img src="images/datamarts.png" alt="datamarts" width="1200">
+</p>
 ```
 
 ---
