@@ -48,8 +48,6 @@ The project simulates a real-world enterprise data platform where data arrives f
                      Grafana Dashboards
 ```
 
-ToDo add architecture image here:
-
 <p align="center">
   <img src="images/arfitecture_bfsa.png" alt="Architecture" width="1200">
 </p>
