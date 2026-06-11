@@ -302,11 +302,21 @@ docker-composer --env-file .env up -d
 
 ## 📊 Dashboards
 
-ToDo add screenshots here:
+### Grafana
 
-```markdown
-![Grafana Dashboard](images/grafana_dashboard.png)
-```
+<p align="center">
+  <img src="images/sales_by_class.png" alt="sales_by_class" width="1200">
+</p>
+
+<p align="center">
+  <img src="images/discount.png" alt="discount" width="1200">
+</p>
+
+<p align="center">
+  <img src="images/customer_profile.png" alt="customer_profile" width="1200">
+</p>
+
+### AirFlow
 
 <p align="center">
   <img src="images/initial_dag.png" alt="initial_dag" width="1200">
