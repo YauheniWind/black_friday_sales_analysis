@@ -48,7 +48,7 @@ The project simulates a real-world enterprise data platform where data arrives f
                      Grafana Dashboards
 ```
 
-Add your architecture image here:
+ToDo add architecture image here:
 
 ```markdown
 ![Architecture](images/architecture.png)
@@ -267,24 +267,22 @@ cd black_friday_sales_analysis
 
 ### Create .env file with varibles
 ```bash
-<ul>
-  <li>POSTGRES_USER:              str</li>
-  <li>POSTGRES_PASSWORD:          str</li>
-  <li>POSTGRES_DB:                str</li>
-  <li>MONGO_INITDB_ROOT_USERNAME: str</li>
-  <li>MONGO_INITDB_ROOT_PASSWORD: str</li>
-  <li>MONGO_INITDB_DATABASE:      str</li>
-  <li>MINIO_ROOT_USER:            str</li>
-  <li>MINIO_ROOT_PASSWORD:        str</li>
-  <li>CLICKHOUSE_USER:            str</li>
-  <li>CLICKHOUSE_PASSWORD:        str</li>
-  <li>CLICKHOUSE_DB:              str</li>
-  <li>GF_SECURITY_ADMIN_US:       str</li>
-  <li>GF_SECURITY_ADMIN_PASSWO:   str</li>
-  <li>POSTGRES_USER:              str</li>
-  <li>POSTGRES_PASSWORD:          str</li>
-  <li>POSTGRES_DB:                str</li>
-</ul>
+  POSTGRES_USER:              str
+  POSTGRES_PASSWORD:          str
+  POSTGRES_DB:                str
+  MONGO_INITDB_ROOT_USERNAME: str
+  MONGO_INITDB_ROOT_PASSWORD: str
+  MONGO_INITDB_DATABASE:      str
+  MINIO_ROOT_USER:            str
+  MINIO_ROOT_PASSWORD:        str
+  CLICKHOUSE_USER:            str
+  CLICKHOUSE_PASSWORD:        str
+  CLICKHOUSE_DB:              str
+  GF_SECURITY_ADMIN_US:       str
+  GF_SECURITY_ADMIN_PASSWO:   str
+  POSTGRES_USER:              str
+  POSTGRES_PASSWORD:          str
+  POSTGRES_DB:                str
 ```
 
 ### Start Infrastructure
@@ -306,7 +304,7 @@ docker-composer --env-file .env up -d
 
 ## 📊 Dashboards
 
-Add screenshots here:
+ToDo add screenshots here:
 
 ```markdown
 ![Grafana Dashboard](images/grafana_dashboard.png)
