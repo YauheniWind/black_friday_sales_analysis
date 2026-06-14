@@ -90,8 +90,8 @@ def rl_load_data_from_minio():
         if not key.endswith(".csv"):
             continue
 
-        print(f"Processing {key}")
-        
+        logger.info(f"Processing {key}")
+
         # Download file
         file_obj = s3_client.get_object(
             Bucket="sales-data",
@@ -102,7 +102,7 @@ def rl_load_data_from_minio():
         df = pd.read_csv(file_obj["Body"])
 
         if df.empty:
-            print(f"Skipping empty file: {key}")
+            logger.info(f"Skipping empty file: {key}")
             continue
 
         # Convert dataframe to list of tuples
@@ -138,7 +138,7 @@ def rl_load_data_from_minio():
         conn.commit()
         conn.close()
 
-        print(f"Inserted {len(rows)} rows from {key}")
+        logger.info(f"Inserted {len(rows)} rows from {key}")
 
         # Delete file after successful load
         s3_client.delete_object(
@@ -146,10 +146,10 @@ def rl_load_data_from_minio():
             Key=key
         )
 
-        print(f"Deleted {key}")
-    print("Load completed")
+        logger.info(f"Deleted {key}")
+    logger.info("Load completed")
 
-print("Done")
+logger.info("Done")
 
 def rl_reject_inconsistency():
     hook = PostgresHook(postgres_conn_id="warehouse_postgres_conn")

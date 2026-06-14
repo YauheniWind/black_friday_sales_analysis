@@ -51,8 +51,8 @@ def upload_mongo():
             if not df.empty:
                 inserted = col.insert_many(df.to_dict("records"))
             logger.info(f"Rows inserted: {len(inserted.inserted_ids)}")
-            print(f"Inserted: {file}")
+            logger.info(f"Inserted: {file}")
             ############# Removing Loaded file #############
             path = os.path.join(folder, file)
             os.remove(path)
-            print(f"File {file} has been removed")
+            logger.info(f"File {file} has been removed")
