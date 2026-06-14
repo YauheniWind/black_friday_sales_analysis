@@ -3,7 +3,7 @@ from airflow.providers.postgres.hooks.postgres import PostgresHook
 from scripts.helpers.get_minio_client import get_minio_client
 from scripts.helpers.get_ch_client import get_ch_client
 
-def initail_bucket():
+def initial_bucket():
     bucket_name = "sales-data"
     s3_client = get_minio_client()
     try:
@@ -11,7 +11,7 @@ def initail_bucket():
     except:
         s3_client.create_bucket(Bucket=bucket_name)
 
-def initail_raw():
+def initial_raw():
     # Create raw schema and table for raw data
     hook = PostgresHook(postgres_conn_id="warehouse_postgres_conn")
     hook.run(""" CREATE SCHEMA IF NOT EXISTS raw; """)
@@ -46,7 +46,7 @@ def initail_raw():
         );
     """)
 
-def initail_dds():
+def initial_dds():
     # Create dds schema and tables for dds data
     hook = PostgresHook(postgres_conn_id="warehouse_postgres_conn")
     hook.run(""" CREATE SCHEMA IF NOT EXISTS dds; """)

@@ -172,7 +172,10 @@ black_friday_sales_analysis
 ├── source_s3/
 ├── source_mongo/
 │
-├── docker-compose.yml
+├── docker
+│   └── docker-compose.yml
+│
+├── images/
 └── README.md
 ```
 
@@ -263,7 +266,7 @@ git clone https://github.com/YauheniWind/black_friday_sales_analysis.git
 cd black_friday_sales_analysis
 ```
 
-### Create .env file with varibles
+### Create .env file with varibles in docker folder
 ```bash
   POSTGRES_USER:              str
   POSTGRES_PASSWORD:          str
@@ -286,6 +289,7 @@ cd black_friday_sales_analysis
 ### Start Infrastructure
 
 ```bash
+cd docker/
 docker-composer --env-file .env up -d
 ```
 
