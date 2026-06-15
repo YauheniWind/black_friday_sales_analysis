@@ -1,0 +1,33 @@
+-- dds.dim_customer
+-- --------------
+-- customer_id (PK)
+-- age_group
+-- gender
+-- city
+-- customer_segment
+
+-- dds.dim_product
+-- --------------
+-- product_id (PK)
+-- product_category
+
+-- dds.dim_payment_method
+-- ---------------------
+-- payment_method_id (PK)
+-- payment_method
+
+-- dds.fact_sales
+-- -------------
+-- transaction_id (PK)
+-- customer_id (FK)
+-- product_id (FK)
+-- payment_method_id (FK)
+-- purchase_date
+-- purchase_hour
+-- original_price
+-- discount_pct
+-- final_price
+-- quantity
+-- purchase_amount
+-- is_weekend
+-- is_black_friday
